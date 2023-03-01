@@ -21,4 +21,4 @@
 
 ## 注意事项:
 
-使用 AOSP GCC 4.9 & AOSP Clang r450784d.
+使用 AOSP GCC 4.9 & AOSP Clang 17.0.0 based on r487747.
