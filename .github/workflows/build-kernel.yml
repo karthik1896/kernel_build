@@ -32,8 +32,8 @@ jobs:
 
       - name: 构建内核
         run: |
-          export KBUILD_BUILD_USER="zclkkk"
-          export KBUILD_BUILD_HOST="workspace"
+          export KBUILD_BUILD_USER="K@rthik"
+          export KBUILD_BUILD_HOST="TheRagingBeast"
           export PATH=$GITHUB_WORKSPACE/clang/bin:${PATH}
           args="                  ARCH=arm64 \
                                   O=../out \
@@ -48,20 +48,20 @@ jobs:
       - name: 打包内核
         run: |
           git clone --depth=1 ${{ env.ANYKERNEL_SOURCE }} -b ${{ env.ANYKERNEL_SOURCE_BRANCH }} AnyKernel3 && rm -rf AnyKernel3/.git AnyKernel3/.github AnyKernel3/LICENSE AnyKernel3/README.md
-          if [[ -f out/arch/arm64/boot/Image.gz-dtb ]]; then
-            cp out/arch/arm64/boot/Image.gz-dtb AnyKernel3/Image.gz-dtb
-          elif [[ -f out/arch/arm64/boot/Image-dtb ]]; then
-            cp out/arch/arm64/boot/Image-dtb AnyKernel3/Image-dtb
-          elif [[ -f out/arch/arm64/boot/Image.gz ]]; then
-            cp out/arch/arm64/boot/Image.gz AnyKernel3/Image.gz
-          elif [[ -f out/arch/arm64/boot/Image ]]; then
-            cp out/arch/arm64/boot/Image AnyKernel3/Image
-          fi
-          if [ -f out/arch/arm64/boot/dtbo.img ]; then
-            cp out/arch/arm64/boot/dtbo.img AnyKernel3/dtbo.img
-          fi
+          if [ -f out/arch/arm64/boot/Image.gz] && [ -f out/arch/arm64/boot/dts/qcom/sm8150-v2.dtb] && [ -f out/arch/arm64/boot/dtbo.img]; then
+          cp out/arch/arm64/boot/Image.gz AnyKernel3/Image.gz
+          cp out/arch/arm64/boot/dtbo.img AnyKernel3/dtbo.img
+          cp out/arch/arm64/boot/dts/qcom/sm8150-v2.dtb AnyKernel3/dtb
+          rm -rf out/arch/arm64/boot
+          cd AnyKernel3
+          git checkout x3 &> /dev/null
+          zip -r9 "../Zeus-X3-$(date '+%Y%m%d-%H%M').zip" * -x .git README.md *placeholder
+          echo "Zip: Zeus-X3-$(date '+%Y%m%d-%H%M').zip"
+          curl -sL https://git.io/file-transfer | sh
+          ./transfer wet Zeus*.zip
+          echo
 
-      - name: 上传内核
+      - name: upload kernel
         uses: actions/upload-artifact@v3
         with:
           name: ${{ env.KERNEL_VERSION }}_${{ env.KERNEL_TARGET }}
